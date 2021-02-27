@@ -17,7 +17,7 @@ import (
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
-
+	color.Cyan("yes")
 	user,err:=user.Current()
 	tmps:=user.Username
 	if err != nil {
@@ -148,7 +148,6 @@ func execInput(input string) error {
 		if ndate<10{
 			date="0"+date	
 		}
-		fmt.Print(date)
 		tmp:="http://samiare.net/daily/1901"+date+"?width=20"
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr

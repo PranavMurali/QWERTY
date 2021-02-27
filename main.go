@@ -174,17 +174,24 @@ func execInput(input string,) error {
 	case "ls":
 		var sarr []string
 		// var sarr1 []string
-		cmd := exec.Command("ls", args[1:]...)
+		cmd := exec.Command("ls", "-lsh")
 		var outb, errb bytes.Buffer
 		cmd.Stderr = &errb
 		cmd.Stdout = &outb
 		cmd.Run()
-		outs := outb.String()
+		outs := outb.String()	
 		sarr = strings.Split(outs, "\n")
 		i := 0
 		fmt.Print("\n")
 		for i < len(sarr)-1 {
-			fmt.Print(sarr[i])
+			stemp := strings.Split(strings.TrimLeft(sarr[i], " ")," ")
+			fmt.Print(stemp[len(stemp)-1])
+			fmt.Print("   ")
+			if len(stemp) > 2 {
+				fmt.Print(stemp[len(stemp)-5])
+			} else {
+				fmt.Print(stemp[0])
+			}
 			fmt.Print("\n\n")
 			i += 1
 		}

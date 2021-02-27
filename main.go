@@ -13,9 +13,15 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
+	"time"
 )
 
+var history[]string
+var htime[]string
+
 func main() {
+
+
 	reader := bufio.NewReader(os.Stdin)
 
 	user,err:=user.Current()
@@ -31,6 +37,10 @@ func main() {
 	for {
 		fmt.Print("🔥🐲> ")
 		input, err := reader.ReadString('\n')
+		history = append(history, input)
+		dt := time.Now()
+		dtf := dt.Format("01-02-2006 15:04:05")
+		htime = append(htime, dtf)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
@@ -57,7 +67,7 @@ func (s cryptoSource) Uint64() (v uint64) {
         return v
 }
 
-func execInput(input string) error {
+func execInput(input string,) error {
 
 	input = strings.TrimSuffix(input, "\n")
 
@@ -65,7 +75,7 @@ func execInput(input string) error {
 
 	switch args[0] {
 
-	case "cd":
+	case "cd":	
 
 		if len(args) < 2 {
 			return errors.New("path required")
@@ -86,7 +96,6 @@ func execInput(input string) error {
 		return cmd.Run()
 
 	case "nano":
-
 		if len(args) < 2 {
 			return errors.New("path required")
 		}
@@ -137,8 +146,7 @@ func execInput(input string) error {
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-
-		return cmd.Run()
+		cmd.Run()
 	
 	case "art":
 		var src cryptoSource
@@ -161,10 +169,36 @@ func execInput(input string) error {
 			return errors.New("name required")
 		}
 	
+	case "ls":
+		cmd := exec.Command("ls", args[1:]...)
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		
+		return cmd.Run()
+
+	case "history":
+		var tmp []string
+		//strings.Join(htime, "\n")
+		i := 0
+		for i < len(history) {
+			tmp = append(tmp, history[i])
+			tmp = append(tmp, "     ")
+			tmp = append(tmp, htime[i])
+			tmp = append(tmp, "\n")
+			i = i + 1
+		}
+		cmd := exec.Command("echo", strings.Join(tmp, ""))
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		
+		return cmd.Run()
+	
+
 	case "exit":
 		os.Exit(0)
 
 	}
+	
 
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stderr = os.Stderr

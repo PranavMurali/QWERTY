@@ -14,13 +14,14 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"bytes"
 )
 
 var history[]string
 var htime[]string
 
-func main() {
 
+func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 
@@ -66,6 +67,7 @@ func (s cryptoSource) Uint64() (v uint64) {
         }
         return v
 }
+
 
 func execInput(input string,) error {
 
@@ -170,11 +172,24 @@ func execInput(input string,) error {
 		}
 	
 	case "ls":
+		var sarr []string
+		// var sarr1 []string
 		cmd := exec.Command("ls", args[1:]...)
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
+		var outb, errb bytes.Buffer
+		cmd.Stderr = &errb
+		cmd.Stdout = &outb
+		cmd.Run()
+		outs := outb.String()
+		sarr = strings.Split(outs, "\n")
+		i := 0
+		fmt.Print("\n")
+		for i < len(sarr)-1 {
+			fmt.Print(sarr[i])
+			fmt.Print("\n\n")
+			i += 1
+		}
+		return nil
 		
-		return cmd.Run()
 
 	case "history":
 		var tmp []string

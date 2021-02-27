@@ -28,7 +28,7 @@ func main() {
 	//yellow := color.New(color.FgYellow).SprintFunc()
 	//red := color.New(color.FgRed).SprintFunc()
 	figure.NewFigure("Welcome "+tmps, "basic", true).Scroll(4000, 300, "left")
-	temps:=[5]string{"Hey "+tmps,"-F", "gay", "-f" ,"smblock"}
+	temps:=[5]string{"Hey "+tmps,"-F", "metal", "-f" ,"smblock"}
 	cmd := exec.Command("toilet",temps[0:]...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout

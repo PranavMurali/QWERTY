@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var history []string
@@ -35,6 +37,8 @@ func main() {
 	cmd.Run()
 
 	for {
+		path, _ := os.Getwd()
+		color.Cyan(path)
 		fmt.Print("🔥🐲> ")
 		input, err := reader.ReadString('\n')
 		history = append(history, input)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	crand "crypto/rand"
 	"encoding/binary"
 	"errors"
@@ -14,23 +15,21 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"bytes"
 )
 
-var history[]string
-var htime[]string
-
+var history []string
+var htime []string
 
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
 
-	user,err:=user.Current()
-	tmps:=user.Username
+	user, err := user.Current()
+	tmps := user.Username
 	if err != nil {
 		panic(err)
 	}
-	cmd:=exec.Command("toilet",tmps)
+	cmd := exec.Command("toilet", tmps)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Run()
@@ -57,19 +56,18 @@ type cryptoSource struct{}
 func (s cryptoSource) Seed(seed int64) {}
 
 func (s cryptoSource) Int63() int64 {
-        return int64(s.Uint64() & ^uint64(1<<63))
+	return int64(s.Uint64() & ^uint64(1<<63))
 }
 
 func (s cryptoSource) Uint64() (v uint64) {
-        err := binary.Read(crand.Reader, binary.BigEndian, &v)
-        if err != nil {
-                log.Fatal(err)
-        }
-        return v
+	err := binary.Read(crand.Reader, binary.BigEndian, &v)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return v
 }
 
-
-func execInput(input string,) error {
+func execInput(input string) error {
 
 	input = strings.TrimSuffix(input, "\n")
 
@@ -77,7 +75,7 @@ func execInput(input string,) error {
 
 	switch args[0] {
 
-	case "cd":	
+	case "cd":
 
 		if len(args) < 2 {
 			return errors.New("path required")
@@ -144,22 +142,22 @@ func execInput(input string,) error {
 		return nil
 
 	case "wther":
-		tmp:="http://wttr.in/chennai"
+		tmp := "http://wttr.in/chennai"
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		cmd.Run()
-	
+
 	case "art":
 		var src cryptoSource
 		rnd := rand.New(src)
-		ndate:=rnd.Intn(30)
-		date:=strconv.Itoa(ndate)
-		if ndate<10{
-			date="0"+date	
+		ndate := rnd.Intn(30)
+		date := strconv.Itoa(ndate)
+		if ndate < 10 {
+			date = "0" + date
 		}
 		fmt.Print(date)
-		tmp:="http://samiare.net/daily/1901"+date+"?width=20"
+		tmp := "http://samiare.net/daily/1901" + date + "?width=20"
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
@@ -170,7 +168,7 @@ func execInput(input string,) error {
 		if len(args) < 2 {
 			return errors.New("name required")
 		}
-	
+
 	case "ls":
 		var sarr []string
 		// var sarr1 []string
@@ -179,12 +177,12 @@ func execInput(input string,) error {
 		cmd.Stderr = &errb
 		cmd.Stdout = &outb
 		cmd.Run()
-		outs := outb.String()	
+		outs := outb.String()
 		sarr = strings.Split(outs, "\n")
 		i := 0
 		fmt.Print("\n")
 		for i < len(sarr)-1 {
-			stemp := strings.Split(strings.TrimLeft(sarr[i], " ")," ")
+			stemp := strings.Split(strings.TrimLeft(sarr[i], " "), " ")
 			fmt.Print(stemp[len(stemp)-1])
 			fmt.Print("   ")
 			if len(stemp) > 2 {
@@ -193,10 +191,9 @@ func execInput(input string,) error {
 				fmt.Print(stemp[0])
 			}
 			fmt.Print("\n\n")
-			i += 1
+			i++
 		}
 		return nil
-		
 
 	case "history":
 		var tmp []string
@@ -211,15 +208,25 @@ func execInput(input string,) error {
 		cmd := exec.Command("echo", strings.Join(tmp, ""))
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-		
+
 		return cmd.Run()
-	
+
+	case "c++":
+		cmd := exec.Command("g++", args[1])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		time.Sleep(10)
+		cmd2 := exec.Command("./a.out")
+		cmd2.Stderr = os.Stderr
+		cmd2.Stdout = os.Stdout
+		cmd2.Run()
+		return nil
 
 	case "exit":
 		os.Exit(0)
 
 	}
-	
 
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Stderr = os.Stderr

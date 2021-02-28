@@ -196,20 +196,16 @@ func execInput(input string) error {
 		return nil
 
 	case "history":
-		var tmp []string
 		i := 0
 		for i < len(history) {
-			tmp = append(tmp, history[i])
-			tmp = append(tmp, "     ")
-			tmp = append(tmp, htime[i])
-			tmp = append(tmp, "\n")
+			fmt.Printf(strings.TrimSpace(htime[i]))
+			fmt.Print("               ")
+			fmt.Printf(strings.TrimSpace(history[i]))
+			fmt.Printf("\n")
 			i = i + 1
 		}
-		cmd := exec.Command("echo", strings.Join(tmp, ""))
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
 
-		return cmd.Run()
+		return nil
 
 	case "c++":
 		cmd := exec.Command("g++", args[1])

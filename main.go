@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	crand "crypto/rand"
 	"encoding/binary"
 	"errors"
@@ -15,28 +16,40 @@ import (
 	"strings"
 	"github.com/fatih/color"
 	"github.com/common-nighthawk/go-figure"
+  "time"
+
 )
 
+var history []string
+var htime []string
+
 func main() {
+
 	reader := bufio.NewReader(os.Stdin)
 	user, err := user.Current()
 	tmps := user.Username
 	if err != nil {
 		panic(err)
 	}
-
 	//yellow := color.New(color.FgYellow).SprintFunc()
 	//red := color.New(color.FgRed).SprintFunc()
 	figure.NewFigure("Welcome "+tmps, "basic", true).Scroll(4000, 300, "left")
 	temps:=[5]string{"QWERTY","-F", "metal", "-f" ,"smblock"}
 	cmd := exec.Command("toilet",temps[0:]...)
+	cmd := exec.Command("toilet", tmps)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 	fmt.Print("\n")
 	for {
+		path, _ := os.Getwd()
+		color.Cyan(path)
 		fmt.Print("🔥🐲> ")
 		input, err := reader.ReadString('\n')
+		history = append(history, input)
+		dt := time.Now()
+		dtf := dt.Format("01-02-2006 15:04:05")
+		htime = append(htime, dtf)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
@@ -97,7 +110,6 @@ func execInput(input string) error {
 		return cmd.Run()
 
 	case "nano":
-
 		if len(args) < 2 {
 			return errors.New("path required")
 		}
@@ -149,9 +161,8 @@ func execInput(input string) error {
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-
 		return cmd.Run()
-
+    
 	case "art":
 		var src cryptoSource
 		rnd := rand.New(src)
@@ -172,6 +183,56 @@ func execInput(input string) error {
 			return errors.New("name required")
 		}
 
+	case "ls":
+		var sarr []string
+		// var sarr1 []string
+		cmd := exec.Command("ls", "-lsh")
+		var outb, errb bytes.Buffer
+		cmd.Stderr = &errb
+		cmd.Stdout = &outb
+		cmd.Run()
+		outs := outb.String()
+		sarr = strings.Split(outs, "\n")
+		i := 0
+		fmt.Print("\n")
+		for i < len(sarr)-1 {
+			stemp := strings.Split(strings.TrimLeft(sarr[i], " "), " ")
+			fmt.Print(stemp[len(stemp)-1])
+			fmt.Print("   ")
+			if len(stemp) > 2 {
+				fmt.Print(stemp[len(stemp)-5])
+			} else {
+				fmt.Print(stemp[0])
+			}
+			fmt.Print("\n\n")
+			i++
+		}
+		return nil
+
+	case "history":
+		i := 0
+		for i < len(history) {
+			fmt.Printf(strings.TrimSpace(htime[i]))
+			fmt.Print("               ")
+			fmt.Printf(strings.TrimSpace(history[i]))
+			fmt.Printf("\n")
+			i = i + 1
+		}
+
+		return nil
+
+	case "c++":
+		cmd := exec.Command("g++", args[1])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		time.Sleep(10)
+		cmd2 := exec.Command("./a.out")
+		cmd2.Stderr = os.Stderr
+		cmd2.Stdout = os.Stdout
+		cmd2.Run()
+		return nil
+    
 	case "exit":
 		os.Exit(0)
 

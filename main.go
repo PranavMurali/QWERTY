@@ -36,7 +36,6 @@ func main() {
 	figure.NewFigure("Welcome "+tmps, "basic", true).Scroll(4000, 300, "left")
 	temps:=[5]string{"QWERTY","-F", "metal", "-f" ,"smblock"}
 	cmd := exec.Command("toilet",temps[0:]...)
-	cmd := exec.Command("toilet", tmps)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Run()

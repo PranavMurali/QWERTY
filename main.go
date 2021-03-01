@@ -190,7 +190,11 @@ func execInput(input string) error {
 			fmt.Print(stemp[len(stemp)-1])
 			fmt.Print("   ")
 			if len(stemp) > 2 {
-				fmt.Print(stemp[len(stemp)-5])
+				if len(stemp[len(stemp)-3]) == 1 {
+					fmt.Print(stemp[len(stemp)-6])
+				} else {
+					fmt.Print(stemp[len(stemp)-5])
+				}
 			} else {
 				fmt.Print(stemp[0])
 			}

@@ -14,10 +14,10 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
-	"github.com/fatih/color"
-	"github.com/common-nighthawk/go-figure"
-    "time"
+	"time"
 
+	"github.com/common-nighthawk/go-figure"
+	"github.com/fatih/color"
 )
 
 var history []string
@@ -38,8 +38,8 @@ func main() {
 	cmd2.Stderr = os.Stderr
 	cmd2.Stdout = os.Stdout
 	cmd2.Run()
-	temps:=[5]string{"QWERTY","-F", "metal", "-f" ,"smblock"}
-	cmd := exec.Command("toilet",temps[0:]...)
+	temps := [5]string{"QWERTY", "-F", "metal", "-f", "smblock"}
+	cmd := exec.Command("toilet", temps[0:]...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Run()
@@ -150,11 +150,11 @@ func execInput(input string) error {
 		if err != nil {
 			panic(err)
 		}
-		
-		fmt.Println( green("Hi ") + user.Name + cyan(" (id: " + user.Uid + ")"))
-		fmt.Println( green("Username: ") +red(user.Username))
-		fmt.Println( green("Home Dir: ") + blue(user.HomeDir))
-		fmt.Println( green("Real User: ") + red(os.Getenv("SUDO_USER")))
+
+		fmt.Println(green("Hi ") + user.Name + cyan(" (id: "+user.Uid+")"))
+		fmt.Println(green("Username: ") + red(user.Username))
+		fmt.Println(green("Home Dir: ") + blue(user.HomeDir))
+		fmt.Println(green("Real User: ") + red(os.Getenv("SUDO_USER")))
 		return nil
 
 	case "wther":
@@ -163,7 +163,7 @@ func execInput(input string) error {
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		return cmd.Run()
-    
+
 	case "art":
 		var src cryptoSource
 		rnd := rand.New(src)
@@ -233,7 +233,7 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
-    
+
 	case "exit":
 		os.Exit(0)
 

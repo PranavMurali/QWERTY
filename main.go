@@ -46,8 +46,8 @@ func main() {
 	fmt.Print("\n")
 	for {
 		path, _ := os.Getwd()
-		color.Cyan(path)
-		fmt.Print("🔥🐲> ")
+		color.Red(path)
+		fmt.Print("📀>> ")
 		input, err := reader.ReadString('\n')
 		history = append(history, input)
 		dt := time.Now()

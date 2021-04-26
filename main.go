@@ -163,6 +163,10 @@ func execInput(input string) error {
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		return cmd.Run()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 062342cc6668b44987bb77ef087398bff34b8a8b
 	case "art":
 		var src cryptoSource
 		rnd := rand.New(src)
@@ -232,6 +236,10 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
+<<<<<<< HEAD
+=======
+
+>>>>>>> 062342cc6668b44987bb77ef087398bff34b8a8b
 	case "exit":
 		os.Exit(0)
 

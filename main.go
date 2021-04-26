@@ -163,6 +163,12 @@ func execInput(input string) error {
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		return cmd.Run()
+
+	case "cpuinfo":
+		cmd := exec.Command("./cpufetch")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		return cmd.Run()
     
 	case "art":
 		var src cryptoSource

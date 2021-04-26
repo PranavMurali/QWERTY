@@ -14,9 +14,10 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
-	"time"
-
 	"github.com/fatih/color"
+	"github.com/common-nighthawk/go-figure"
+    "time"
+
 )
 
 var history []string
@@ -25,21 +26,28 @@ var htime []string
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
-
 	user, err := user.Current()
 	tmps := user.Username
 	if err != nil {
 		panic(err)
 	}
-	cmd := exec.Command("toilet", tmps)
+	//yellow := color.New(color.FgYellow).SprintFunc()
+	//red := color.New(color.FgRed).SprintFunc()
+	figure.NewFigure("Welcome "+tmps, "basic", true).Scroll(4000, 300, "left")
+	cmd2 := exec.Command("clear")
+	cmd2.Stderr = os.Stderr
+	cmd2.Stdout = os.Stdout
+	cmd2.Run()
+	temps:=[5]string{"QWERTY","-F", "metal", "-f" ,"smblock"}
+	cmd := exec.Command("toilet",temps[0:]...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Run()
-
+	fmt.Print("\n")
 	for {
 		path, _ := os.Getwd()
-		color.Cyan(path)
-		fmt.Print("🔥🐲> ")
+		color.Red(path)
+		fmt.Print("📀>> ")
 		input, err := reader.ReadString('\n')
 		history = append(history, input)
 		dt := time.Now()
@@ -73,8 +81,11 @@ func (s cryptoSource) Uint64() (v uint64) {
 
 func execInput(input string) error {
 
+	green := color.New(color.Bold, color.FgGreen).SprintFunc()
+	red := color.New(color.Bold, color.FgRed).SprintFunc()
+	blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+	cyan := color.New(color.Bold, color.FgCyan).SprintFunc()
 	input = strings.TrimSuffix(input, "\n")
-
 	args := strings.Split(input, " ")
 
 	switch args[0] {
@@ -139,10 +150,11 @@ func execInput(input string) error {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("Hi " + user.Name + " (id: " + user.Uid + ")")
-		fmt.Println("Username: " + user.Username)
-		fmt.Println("Home Dir: " + user.HomeDir)
-		fmt.Println("Real User: " + os.Getenv("SUDO_USER"))
+		
+		fmt.Println( green("Hi ") + user.Name + cyan(" (id: " + user.Uid + ")"))
+		fmt.Println( green("Username: ") +red(user.Username))
+		fmt.Println( green("Home Dir: ") + blue(user.HomeDir))
+		fmt.Println( green("Real User: ") + red(os.Getenv("SUDO_USER")))
 		return nil
 
 	case "wther":
@@ -150,8 +162,8 @@ func execInput(input string) error {
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
-		cmd.Run()
-
+		return cmd.Run()
+    
 	case "art":
 		var src cryptoSource
 		rnd := rand.New(src)
@@ -160,7 +172,6 @@ func execInput(input string) error {
 		if ndate < 10 {
 			date = "0" + date
 		}
-		fmt.Print(date)
 		tmp := "http://samiare.net/daily/1901" + date + "?width=20"
 		cmd := exec.Command("curl", tmp)
 		cmd.Stderr = os.Stderr
@@ -226,7 +237,7 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
-
+    
 	case "exit":
 		os.Exit(0)
 

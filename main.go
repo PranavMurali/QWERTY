@@ -16,7 +16,7 @@ import (
 	"strings"
 	"github.com/fatih/color"
 	"github.com/common-nighthawk/go-figure"
-  "time"
+    "time"
 
 )
 
@@ -34,6 +34,10 @@ func main() {
 	//yellow := color.New(color.FgYellow).SprintFunc()
 	//red := color.New(color.FgRed).SprintFunc()
 	figure.NewFigure("Welcome "+tmps, "basic", true).Scroll(4000, 300, "left")
+	cmd2 := exec.Command("clear")
+	cmd2.Stderr = os.Stderr
+	cmd2.Stdout = os.Stdout
+	cmd2.Run()
 	temps:=[5]string{"QWERTY","-F", "metal", "-f" ,"smblock"}
 	cmd := exec.Command("toilet",temps[0:]...)
 	cmd.Stderr = os.Stderr
@@ -42,8 +46,8 @@ func main() {
 	fmt.Print("\n")
 	for {
 		path, _ := os.Getwd()
-		color.Cyan(path)
-		fmt.Print("🔥🐲> ")
+		color.Red(path)
+		fmt.Print("📀>> ")
 		input, err := reader.ReadString('\n')
 		history = append(history, input)
 		dt := time.Now()
@@ -81,9 +85,7 @@ func execInput(input string) error {
 	red := color.New(color.Bold, color.FgRed).SprintFunc()
 	blue := color.New(color.Bold, color.FgBlue).SprintFunc()
 	cyan := color.New(color.Bold, color.FgCyan).SprintFunc()
-
 	input = strings.TrimSuffix(input, "\n")
-
 	args := strings.Split(input, " ")
 
 	switch args[0] {

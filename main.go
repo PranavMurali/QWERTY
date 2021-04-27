@@ -5,10 +5,13 @@ import (
 	"bytes"
 	crand "crypto/rand"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	rand "math/rand"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/user"
@@ -163,6 +166,52 @@ func execInput(input string) error {
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		return cmd.Run()
+
+	case "cpuinfo":
+		cmd := exec.Command("./cpufetch")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		return cmd.Run()
+
+	case "covid":
+		if len(args) < 2 {
+			return errors.New("Country name required")
+		}
+		response, err := http.Get("https://coronavirus-19-api.herokuapp.com/countries/" + args[1])
+
+		if err != nil {
+			fmt.Print(err.Error())
+			os.Exit(1)
+		}
+
+		responseData, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		var r map[string]interface{}
+		json.Unmarshal([]byte(responseData), &r)
+		if len(args) == 2 {
+			fmt.Printf("Country:       " + blue(args[1]+"\n"))
+			fmt.Printf("Cases:         %.f\n", r["cases"])
+			fmt.Printf("Deaths:        %.f\n", r["deaths"])
+			fmt.Printf("Recovered:     %.f\n", r["recovered"])
+			fmt.Printf("Active Cases:  %.f\n", r["active"])
+			fmt.Printf("Deaths Today:  %.f\n", r["todayDeaths"])
+			fmt.Printf("Cases Today:   %.f\n", r["todayCases"])
+		} else {
+			fmt.Printf("Country:                     " + blue(args[1]+"\n"))
+			fmt.Printf("Cases:                       %.f\n", r["cases"])
+			fmt.Printf("Deaths:                      %.f\n", r["deaths"])
+			fmt.Printf("Recovered:                   %.f\n", r["recovered"])
+			fmt.Printf("Active Cases:                %.f\n", r["active"])
+			fmt.Printf("Deaths Today:                %.f\n", r["todayDeaths"])
+			fmt.Printf("Cases Today:                 %.f\n", r["todayCases"])
+			fmt.Printf("Cases per 1 Million:         %.f\n", r["casesPerOneMillion"])
+			fmt.Printf("Deaths per 1 Million:        %.f\n", r["deathsPerOneMillion"])
+			fmt.Printf("Total Tests:                 %.f\n", r["totalTests"])
+			fmt.Printf("Tests per 1 Million:         %.f\n", r["testsPerOneMillion"])
+		}
+		return nil
 
 	case "art":
 		var src cryptoSource

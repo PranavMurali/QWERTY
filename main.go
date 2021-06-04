@@ -22,7 +22,6 @@ import (
     "time"
 
 )
-
 var history []string
 var htime []string
 
@@ -282,10 +281,9 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
-    
+		
 	case "exit":
 		os.Exit(0)
-
 	}
 
 	cmd := exec.Command(args[0], args[1:]...)

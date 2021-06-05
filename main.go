@@ -17,11 +17,21 @@ import (
 	"os/user"
 	"strconv"
 	"strings"
-	"github.com/fatih/color"
-	"github.com/common-nighthawk/go-figure"
-    "time"
+	"time"
 
+	"github.com/common-nighthawk/go-figure"
+	"github.com/fatih/color"
+	"github.com/jedib0t/go-pretty/table"
 )
+
+
+/*
+Package dependency
+sudo apt install bitwise
+sudo npm i -g mdlt
+sudo apt install toilet
+*/
+
 var history []string
 var htime []string
 
@@ -40,8 +50,8 @@ func main() {
 	cmd2.Stderr = os.Stderr
 	cmd2.Stdout = os.Stdout
 	cmd2.Run()
-	temps:=[5]string{"QWERTY","-F", "metal", "-f" ,"smblock"}
-	cmd := exec.Command("toilet",temps[0:]...)
+	temps := [5]string{"QWERTY", "-F", "metal", "-f", "smblock"}
+	cmd := exec.Command("toilet", temps[0:]...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Run()
@@ -152,11 +162,11 @@ func execInput(input string) error {
 		if err != nil {
 			panic(err)
 		}
-		
-		fmt.Println( green("Hi ") + user.Name + cyan(" (id: " + user.Uid + ")"))
-		fmt.Println( green("Username: ") +red(user.Username))
-		fmt.Println( green("Home Dir: ") + blue(user.HomeDir))
-		fmt.Println( green("Real User: ") + red(os.Getenv("SUDO_USER")))
+
+		fmt.Println(green("Hi ") + user.Name + cyan(" (id: "+user.Uid+")"))
+		fmt.Println(green("Username: ") + red(user.Username))
+		fmt.Println(green("Home Dir: ") + blue(user.HomeDir))
+		fmt.Println(green("Real User: ") + red(os.Getenv("SUDO_USER")))
 		return nil
 
 	case "wther":
@@ -176,7 +186,7 @@ func execInput(input string) error {
 		if len(args) < 2 {
 			return errors.New("Country name required")
 		}
-		response, err := http.Get("https://coronavirus-19-api.herokuapp.com/countries/"+args[1])
+		response, err := http.Get("https://coronavirus-19-api.herokuapp.com/countries/" + args[1])
 
 		if err != nil {
 			fmt.Print(err.Error())
@@ -189,29 +199,29 @@ func execInput(input string) error {
 		}
 		var r map[string]interface{}
 		json.Unmarshal([]byte(responseData), &r)
-		if len(args)==2{
-			fmt.Printf( "Country:       "+blue(args[1]+"\n"))
-			fmt.Printf( "Cases:         %.f\n",r["cases"])
-			fmt.Printf( "Deaths:        %.f\n",r["deaths"])
-			fmt.Printf( "Recovered:     %.f\n",r["recovered"])
-			fmt.Printf( "Active Cases:  %.f\n",r["active"])
-			fmt.Printf( "Deaths Today:  %.f\n",r["todayDeaths"])
-			fmt.Printf( "Cases Today:   %.f\n",r["todayCases"])	
-		}else {
-			fmt.Printf( "Country:                     "+blue(args[1]+"\n"))
-			fmt.Printf( "Cases:                       %.f\n",r["cases"])
-			fmt.Printf( "Deaths:                      %.f\n",r["deaths"])
-			fmt.Printf( "Recovered:                   %.f\n",r["recovered"])
-			fmt.Printf( "Active Cases:                %.f\n",r["active"])
-			fmt.Printf( "Deaths Today:                %.f\n",r["todayDeaths"])
-			fmt.Printf( "Cases Today:                 %.f\n",r["todayCases"])		
-			fmt.Printf( "Cases per 1 Million:         %.f\n",r["casesPerOneMillion"])
-			fmt.Printf( "Deaths per 1 Million:        %.f\n",r["deathsPerOneMillion"])
-			fmt.Printf( "Total Tests:                 %.f\n",r["totalTests"])
-			fmt.Printf( "Tests per 1 Million:         %.f\n",r["testsPerOneMillion"])
+		if len(args) == 2 {
+			fmt.Printf("Country:       " + blue(args[1]+"\n"))
+			fmt.Printf("Cases:         %.f\n", r["cases"])
+			fmt.Printf("Deaths:        %.f\n", r["deaths"])
+			fmt.Printf("Recovered:     %.f\n", r["recovered"])
+			fmt.Printf("Active Cases:  %.f\n", r["active"])
+			fmt.Printf("Deaths Today:  %.f\n", r["todayDeaths"])
+			fmt.Printf("Cases Today:   %.f\n", r["todayCases"])
+		} else {
+			fmt.Printf("Country:                     " + blue(args[1]+"\n"))
+			fmt.Printf("Cases:                       %.f\n", r["cases"])
+			fmt.Printf("Deaths:                      %.f\n", r["deaths"])
+			fmt.Printf("Recovered:                   %.f\n", r["recovered"])
+			fmt.Printf("Active Cases:                %.f\n", r["active"])
+			fmt.Printf("Deaths Today:                %.f\n", r["todayDeaths"])
+			fmt.Printf("Cases Today:                 %.f\n", r["todayCases"])
+			fmt.Printf("Cases per 1 Million:         %.f\n", r["casesPerOneMillion"])
+			fmt.Printf("Deaths per 1 Million:        %.f\n", r["deathsPerOneMillion"])
+			fmt.Printf("Total Tests:                 %.f\n", r["totalTests"])
+			fmt.Printf("Tests per 1 Million:         %.f\n", r["testsPerOneMillion"])
 		}
 		return nil
-    
+
 	case "art":
 		var src cryptoSource
 		rnd := rand.New(src)
@@ -244,18 +254,25 @@ func execInput(input string) error {
 		sarr = strings.Split(outs, "\n")
 		i := 0
 		fmt.Print("\n")
-		for i < len(sarr)-1 {
+
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"File Name", "Size"})
+		for i < len(sarr) {
 			stemp := strings.Split(strings.TrimLeft(sarr[i], " "), " ")
-			fmt.Print(stemp[len(stemp)-1])
-			fmt.Print("   ")
 			if len(stemp) > 2 {
-				fmt.Print(stemp[len(stemp)-5])
-			} else {
-				fmt.Print(stemp[0])
+				t.AppendRows([]table.Row{
+					{stemp[len(stemp)-1], stemp[len(stemp)-5]},
+				})
 			}
-			fmt.Print("\n\n")
 			i++
+			if i == len(sarr)-1 {
+				t.Render()
+			} else if len(sarr) == 1 {
+				t.Render()
+			}
 		}
+
 		return nil
 
 	case "history":
@@ -281,7 +298,72 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
-		
+    
+	case "init-project":
+		if args[1] == "options" {
+			fmt.Println("vanilla\nvanilla-ts\nvue\nvue-ts\nreact\nreact-ts\npreact\npreact-ts\nlit-element\nlit-element-ts\nsvelte\nsvelte-ts")
+		} else {
+			cmd := exec.Command("npm", "init", "@vitejs/app", "myproject", "--template", args[1])
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
+			cmd.Run()
+			fmt.Println("\n\n Project Initialised \n\n")
+		}
+
+		return nil
+
+	case "convert":
+		cmd := exec.Command("bitwise", args[1])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		return nil
+
+	case "calculate":
+		cmd := exec.Command("mdlt", args[1], args[2])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		return nil
+
+	case "python-details":
+		cmd := exec.Command("python", "--version")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		fmt.Print("\n")
+		cmd2 := exec.Command("python3", "--version")
+		cmd2.Stderr = os.Stderr
+		cmd2.Stdout = os.Stdout
+		cmd2.Run()
+		fmt.Print("\n")
+		cmd3 := exec.Command("pip", "freeze")
+		var outb, errb bytes.Buffer
+		cmd3.Stderr = &errb
+		cmd3.Stdout = &outb
+		cmd3.Run()
+		outs := outb.String()
+		var sarr []string
+		sarr = strings.Split(outs, "\n")
+		i := 0
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"Package", "Version"})
+		for i < len(sarr)-1 {
+			stemp := strings.Split(sarr[i], "==")
+			t.AppendRows([]table.Row{
+				{stemp[0], stemp[1]},
+			})
+			i++
+
+			if i == len(sarr)-2 {
+				t.Render()
+			}
+		}
+
+		return nil
+
+
 	case "exit":
 		os.Exit(0)
 	}

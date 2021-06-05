@@ -21,7 +21,13 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/fatih/color"
+	"github.com/jedib0t/go-pretty/table"
 )
+
+/*
+sudo apt install bitwise
+sudo npm i -g mdlt
+*/
 
 var history []string
 var htime []string
@@ -245,22 +251,25 @@ func execInput(input string) error {
 		sarr = strings.Split(outs, "\n")
 		i := 0
 		fmt.Print("\n")
-		for i < len(sarr)-1 {
+
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"File Name", "Size"})
+		for i < len(sarr) {
 			stemp := strings.Split(strings.TrimLeft(sarr[i], " "), " ")
-			fmt.Print(stemp[len(stemp)-1])
-			fmt.Print("   ")
 			if len(stemp) > 2 {
-				if len(stemp[len(stemp)-3]) == 1 {
-					fmt.Print(stemp[len(stemp)-6])
-				} else {
-					fmt.Print(stemp[len(stemp)-5])
-				}
-			} else {
-				fmt.Print(stemp[0])
+				t.AppendRows([]table.Row{
+					{stemp[len(stemp)-1], stemp[len(stemp)-5]},
+				})
 			}
-			fmt.Print("\n\n")
 			i++
+			if i == len(sarr)-1 {
+				t.Render()
+			} else if len(sarr) == 1 {
+				t.Render()
+			}
 		}
+
 		return nil
 
 	case "history":
@@ -285,6 +294,70 @@ func execInput(input string) error {
 		cmd2.Stderr = os.Stderr
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
+		return nil
+
+	case "init-project":
+		if args[1] == "options" {
+			fmt.Println("vanilla\nvanilla-ts\nvue\nvue-ts\nreact\nreact-ts\npreact\npreact-ts\nlit-element\nlit-element-ts\nsvelte\nsvelte-ts")
+		} else {
+			cmd := exec.Command("npm", "init", "@vitejs/app", "myproject", "--template", args[1])
+			cmd.Stderr = os.Stderr
+			cmd.Stdout = os.Stdout
+			cmd.Run()
+			fmt.Println("\n\n Project Initialised \n\n")
+		}
+
+		return nil
+
+	case "convert":
+		cmd := exec.Command("bitwise", args[1])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		return nil
+
+	case "calculate":
+		cmd := exec.Command("mdlt", args[1], args[2])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		return nil
+
+	case "python-details":
+		cmd := exec.Command("python", "--version")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		fmt.Print("\n")
+		cmd2 := exec.Command("python3", "--version")
+		cmd2.Stderr = os.Stderr
+		cmd2.Stdout = os.Stdout
+		cmd2.Run()
+		fmt.Print("\n")
+		cmd3 := exec.Command("pip", "freeze")
+		var outb, errb bytes.Buffer
+		cmd3.Stderr = &errb
+		cmd3.Stdout = &outb
+		cmd3.Run()
+		outs := outb.String()
+		var sarr []string
+		sarr = strings.Split(outs, "\n")
+		i := 0
+		t := table.NewWriter()
+		t.SetOutputMirror(os.Stdout)
+		t.AppendHeader(table.Row{"Package", "Version"})
+		for i < len(sarr)-1 {
+			stemp := strings.Split(sarr[i], "==")
+			t.AppendRows([]table.Row{
+				{stemp[0], stemp[1]},
+			})
+			i++
+
+			if i == len(sarr)-2 {
+				t.Render()
+			}
+		}
+
 		return nil
 
 	case "exit":

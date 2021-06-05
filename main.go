@@ -15,6 +15,7 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -245,6 +246,7 @@ func execInput(input string) error {
 	case "ls":
 		var sarr []string
 		// var sarr1 []string
+		isAlpha := regexp.MustCompile(`^[A-Za-z]+$`).MatchString
 		cmd := exec.Command("ls", "-lsh")
 		var outb, errb bytes.Buffer
 		cmd.Stderr = &errb
@@ -261,9 +263,16 @@ func execInput(input string) error {
 		for i < len(sarr) {
 			stemp := strings.Split(strings.TrimLeft(sarr[i], " "), " ")
 			if len(stemp) > 2 {
-				t.AppendRows([]table.Row{
-					{stemp[len(stemp)-1], stemp[len(stemp)-5]},
-				})
+				if isAlpha(stemp[len(stemp)-5]) {
+					t.AppendRows([]table.Row{
+						{stemp[len(stemp)-1], stemp[len(stemp)-6]},
+					})
+				} else {
+					t.AppendRows([]table.Row{
+						{stemp[len(stemp)-1], stemp[len(stemp)-5]},
+					})
+				}
+
 			}
 			i++
 			if i == len(sarr)-1 {

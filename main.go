@@ -24,9 +24,12 @@ import (
 	"github.com/jedib0t/go-pretty/table"
 )
 
+
 /*
+Package dependency
 sudo apt install bitwise
 sudo npm i -g mdlt
+sudo apt install toilet
 */
 
 var history []string
@@ -295,7 +298,7 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
-
+    
 	case "init-project":
 		if args[1] == "options" {
 			fmt.Println("vanilla\nvanilla-ts\nvue\nvue-ts\nreact\nreact-ts\npreact\npreact-ts\nlit-element\nlit-element-ts\nsvelte\nsvelte-ts")
@@ -360,9 +363,9 @@ func execInput(input string) error {
 
 		return nil
 
+
 	case "exit":
 		os.Exit(0)
-
 	}
 
 	cmd := exec.Command(args[0], args[1:]...)

@@ -13,18 +13,23 @@ import (
 	rand "math/rand"
 	"net/http"
 	"os"
+	"os/signal"
 	"os/exec"
 	"os/user"
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
+	"github.com/fatih/color"
+	"github.com/common-nighthawk/go-figure"
+    "time"
+
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/fatih/color"
 	"github.com/jedib0t/go-pretty/table"
+  "github.com/howeyc/gopass"
 )
-
+	
 
 /*
 Package dependency
@@ -35,6 +40,12 @@ sudo apt install toilet
 
 var history []string
 var htime []string
+type profile struct {
+	Name     string
+	colour string
+	pref  int
+}
+
 
 func main() {
 
@@ -100,6 +111,8 @@ func execInput(input string) error {
 	cyan := color.New(color.Bold, color.FgCyan).SprintFunc()
 	input = strings.TrimSuffix(input, "\n")
 	args := strings.Split(input, " ")
+	killSignal := make(chan os.Signal, 1)
+	signal.Notify(killSignal, os.Interrupt)
 
 	switch args[0] {
 
@@ -131,9 +144,17 @@ func execInput(input string) error {
 		cmd := exec.Command("nano", args[1:]...)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
+		cmd.Stdin = os.Stdin
 
 		return cmd.Run()
 
+	case "dock-stat":
+		cmd := exec.Command("dockly")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Stdin=os.Stdin
+
+		return cmd.Run()
 	case "touch":
 
 		if len(args) < 2 {
@@ -157,6 +178,15 @@ func execInput(input string) error {
 		cmd.Stdout = os.Stdout
 
 		return cmd.Run()
+
+	case "supercow":
+
+		if len(args) < 2 {
+			return errors.New("User Name Required")
+		}
+		fmt.Println("Enter Password")
+		pass,_ := gopass.GetPasswd()
+		fmt.Println(pass)
 
 	case "userinfo":
 		user, err := user.Current()
@@ -307,7 +337,23 @@ func execInput(input string) error {
 		cmd2.Stdout = os.Stdout
 		cmd2.Run()
 		return nil
-    
+	
+	case "pkgman":
+		
+		cmd := exec.Command("/bin/sh", "-c", "sudo apt-get install mps-youtube", args[1])
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Stdin = os.Stdin
+		return cmd.Run()
+
+	case "youplayer":
+
+		cmd := exec.Command("mpsyt")
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		cmd.Stdin = os.Stdin
+		return cmd.Run()
+
 	case "init-project":
 		if args[1] == "options" {
 			fmt.Println("vanilla\nvanilla-ts\nvue\nvue-ts\nreact\nreact-ts\npreact\npreact-ts\nlit-element\nlit-element-ts\nsvelte\nsvelte-ts")
@@ -372,14 +418,17 @@ func execInput(input string) error {
 
 		return nil
 
-
 	case "exit":
 		os.Exit(0)
 	}
-
-	cmd := exec.Command(args[0], args[1:]...)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-
-	return cmd.Run()
+	if args == nil {
+		cmd := exec.Command(args[0], args[1:]...)
+		cmd.Stderr = os.Stderr
+		cmd.Stdout = os.Stdout
+		return cmd.Run()
+	}
+	<-killSignal
+	fmt.Println("Thanks for using Golang!")
+	return nil
 }
+

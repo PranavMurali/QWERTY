@@ -19,11 +19,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"github.com/fatih/color"
-	"github.com/common-nighthawk/go-figure"
     "time"
-
-
 	"github.com/common-nighthawk/go-figure"
 	"github.com/fatih/color"
 	"github.com/jedib0t/go-pretty/table"
@@ -420,15 +416,15 @@ func execInput(input string) error {
 
 	case "exit":
 		os.Exit(0)
-	}
-	if args == nil {
+	
+	default:
 		cmd := exec.Command(args[0], args[1:]...)
 		cmd.Stderr = os.Stderr
 		cmd.Stdout = os.Stdout
 		return cmd.Run()
 	}
 	<-killSignal
-	fmt.Println("Thanks for using Golang!")
 	return nil
+	
 }
 

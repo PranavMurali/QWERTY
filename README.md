@@ -9,7 +9,7 @@
 - Cpuinfo for information about your cpu.
 - Gpufetch for gpu information.
 - Dock-stats to check on your docker containers.
-- Remodlled ls command to aid in readability.
+- Remodelled ls command to aid in readability.
 - Inbuilt number system converter and integrator, differentiator and simplifier.
 - Python-details command to check on the current downloaded versions of python and thier libraries.
 - Art for randomly generated ASCII art.
